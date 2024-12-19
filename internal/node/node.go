@@ -22,3 +22,7 @@ func NewNode(localAddr string, peers []string) (*Node, error) {
 
 	return n, nil
 }
+
+func (n *Node) Run() error {
+	return n.transport.StartListening()
+}

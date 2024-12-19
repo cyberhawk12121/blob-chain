@@ -1,18 +1,20 @@
 package node
 
+import "log"
+
 type Service interface {
 	HandleIncomingMessages(msg Message, source string)
 	SendMessage(msg Message)
 }
 
 type service struct {
-	repo Repository
+	repo      Repository
 	transport Transport
 }
 
 func NewService(repo Repository, transport Transport) Service {
-	return &service {
-		repo: repo,
+	return &service{
+		repo:      repo,
 		transport: transport,
 	}
 }
@@ -24,9 +26,9 @@ func (s *service) HandleIncomingMessages(msg Message, source string) {
 	s.repo.MarkMessageSeen(msg.Content)
 	log.Printf("Received message from %s: %s", source, msg.Content)
 
-	peers:= s.repo.GetPeer()
-	for _, p:= range peers {
-		if p!= source {
+	peers := s.repo.GetPeer()
+	for _, p := range peers {
+		if p != source {
 			s.transport.SendMessage(msg, p)
 		}
 	}
@@ -34,7 +36,7 @@ func (s *service) HandleIncomingMessages(msg Message, source string) {
 
 func (s *service) SendMessage(msg Message) {
 	s.repo.MarkMessageSeen(msg.Content)
-	peers := 	s.repo.GetPeer()
+	peers := s.repo.GetPeer()
 
 	for _, p := range peers {
 		s.transport.SendMessage(msg, p)
